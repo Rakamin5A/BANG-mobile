@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 
 import Input from "../components/Input";
@@ -22,11 +22,13 @@ export default function Index() {
         style={styles.background}
         colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
       />
+      <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.loginText}>Masuk</Text>
       <View style={styles.inputContainer}>
         <Input
           name="username"
           placeholder="Username"
+          type="text"
           state={loginForm.username}
           handleOnChangeText={handleOnChangeText}
         />
@@ -35,6 +37,7 @@ export default function Index() {
           placeholder="Password"
           state={loginForm.password}
           handleOnChangeText={handleOnChangeText}
+          isPassword={true}
         />
       </View>
       <Button primary="#F9AA00" shadow="#9F715D" text="Masuk" />
@@ -61,10 +64,15 @@ const styles = StyleSheet.create({
     right: 0,
     height: "100%",
   },
+  logo: {
+    width: 200,
+    height: 200,
+  },
   loginText: {
     fontSize: 24,
     fontWeight: 700,
     color: "#FFFFFF",
+    marginTop: 22,
   },
   inputContainer: {
     display: "flex",
