@@ -1,11 +1,17 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function Button({ primary, shadow, text }) {
+export default function Button({
+  primary,
+  shadow,
+  color = "#FFFFFF",
+  text,
+  handlePress,
+}) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity style={styles.button} onPress={handlePress}>
       <View style={{ ...styles.shadow, backgroundColor: shadow }}>
         <View style={{ ...styles.primary, backgroundColor: primary }}>
-          <Text style={styles.text}>{text}</Text>
+          <Text style={{ ...styles.text, color }}>{text}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -13,14 +19,17 @@ export default function Button({ primary, shadow, text }) {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    width: "100%",
+  },
   shadow: {
     height: 50,
-    width: 200,
+    width: "100%",
     borderRadius: 30,
   },
   primary: {
     height: 50,
-    width: 200,
+    width: "100%",
     borderRadius: 30,
     position: "absolute",
     bottom: 5,
@@ -30,6 +39,5 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     marginVertical: "auto",
     textAlign: "center",
-    color: "#FFFFFF",
   },
 });

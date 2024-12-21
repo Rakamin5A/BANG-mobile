@@ -1,10 +1,11 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
+import { Link, router } from "expo-router";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { Link } from "expo-router";
+import { colors } from "../constants";
 
 export default function Index() {
   const [loginForm, setLoginForm] = useState({
@@ -16,31 +17,43 @@ export default function Index() {
     setLoginForm({ ...loginForm, [key]: value });
   };
 
+  const handleLogin = () => {
+    router.replace("/(home)");
+  };
+
   return (
     <View style={styles.container}>
+      <StatusBar hidden />
       <LinearGradient
         style={styles.background}
         colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
       />
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.loginText}>Masuk</Text>
-      <View style={styles.inputContainer}>
-        <Input
-          name="username"
-          placeholder="Username"
-          type="text"
-          state={loginForm.username}
-          handleOnChangeText={handleOnChangeText}
-        />
-        <Input
-          name="password"
-          placeholder="Password"
-          state={loginForm.password}
-          handleOnChangeText={handleOnChangeText}
-          isPassword={true}
+      <View style={styles.wrapper}>
+        <View style={styles.inputContainer}>
+          <Input
+            name="username"
+            placeholder="Username"
+            type="text"
+            state={loginForm.username}
+            handleOnChangeText={handleOnChangeText}
+          />
+          <Input
+            name="password"
+            placeholder="Password"
+            state={loginForm.password}
+            handleOnChangeText={handleOnChangeText}
+            isPassword={true}
+          />
+        </View>
+        <Button
+          primary={colors.auth.primary}
+          shadow={colors.auth.secondary}
+          text="Masuk"
+          handlePress={handleLogin}
         />
       </View>
-      <Button primary="#F9AA00" shadow="#9F715D" text="Masuk" />
       <Text style={styles.registerText}>
         Belum punya akun?{" "}
         <Link href="/register" style={styles.registerLink}>
@@ -74,17 +87,22 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginTop: 22,
   },
+  wrapper: {
+    width: "100%",
+    paddingHorizontal: 60,
+  },
   inputContainer: {
     display: "flex",
     gap: 25,
     marginTop: 22,
     marginBottom: 31,
+    width: "100%",
   },
   registerText: {
     marginTop: 18,
     color: "#FFFFFF",
   },
   registerLink: {
-    color: "#F9AA00",
+    color: colors.auth.primary,
   },
 });

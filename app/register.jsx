@@ -1,10 +1,11 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
+import { Link } from "expo-router";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { Link } from "expo-router";
+import { colors } from "../constants";
 
 export default function Register() {
   const [registerForm, setRegisterForm] = useState({
@@ -19,35 +20,42 @@ export default function Register() {
 
   return (
     <View style={styles.container}>
+      <StatusBar hidden />
       <LinearGradient
         style={styles.background}
         colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
       />
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.registerText}>Daftar</Text>
-      <View style={styles.inputContainer}>
-        <Input
-          name="email"
-          placeholder="Email"
-          type="email-address"
-          state={registerForm.email}
-          handleOnChangeText={handleOnChangeText}
-        />
-        <Input
-          name="username"
-          placeholder="Username"
-          state={registerForm.username}
-          handleOnChangeText={handleOnChangeText}
-        />
-        <Input
-          name="password"
-          placeholder="Password"
-          state={registerForm.password}
-          handleOnChangeText={handleOnChangeText}
-          isPassword={true}
+      <View style={styles.wrapper}>
+        <View style={styles.inputContainer}>
+          <Input
+            name="email"
+            placeholder="Email"
+            type="email-address"
+            state={registerForm.email}
+            handleOnChangeText={handleOnChangeText}
+          />
+          <Input
+            name="username"
+            placeholder="Username"
+            state={registerForm.username}
+            handleOnChangeText={handleOnChangeText}
+          />
+          <Input
+            name="password"
+            placeholder="Password"
+            state={registerForm.password}
+            handleOnChangeText={handleOnChangeText}
+            isPassword={true}
+          />
+        </View>
+        <Button
+          primary={colors.auth.primary}
+          shadow={colors.auth.secondary}
+          text="Daftar"
         />
       </View>
-      <Button primary="#F9AA00" shadow="#9F715D" text="Daftar" />
       <Text style={styles.loginText}>
         Sudah punya akun?{" "}
         <Link href="/" style={styles.loginLink}>
@@ -80,6 +88,10 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     color: "#FFFFFF",
   },
+  wrapper: {
+    width: "100%",
+    paddingHorizontal: 60,
+  },
   inputContainer: {
     display: "flex",
     gap: 25,
@@ -91,6 +103,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   loginLink: {
-    color: "#F9AA00",
+    color: colors.auth.primary,
   },
 });
