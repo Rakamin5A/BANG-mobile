@@ -1,28 +1,28 @@
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  Animated,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useAnimatedValue,
-  View,
-} from "react-native";
 import { useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Animated,
+  useAnimatedValue,
+  Image,
+  Text,
+} from "react-native";
 
 import WheelChoice from "../../components/WheelChoice";
 import HandImage from "../../components/HandImage";
-import { nextRound } from "../../utils";
 import { useGameMode } from "../../contexts/GameModeContext";
 import useCountdown from "../../hooks/useCountdown";
 import useRoundCountdown from "../../hooks/useRoundCountdown";
 
-export default function Pve() {
-  const [playerChoice, setPlayerChoice] = useState(null);
-  const [botChoice, setBotChoice] = useState(null);
+export default function OffPvp() {
+  const [firstPlayerTurn, setFirstPlayerTurn] = useState(true);
+  const [firstPlayerChoice, setFirstPlayerChoice] = useState(null);
+  const [secondPlayerChoice, setSecondPlayerChoice] = useState(null);
   const [score, setScore] = useState({
-    player: 0,
-    bot: 0,
+    firstPlayer: 0,
+    secondPlayer: 0,
   });
   const { rounds } = useGameMode();
   const translateY = useAnimatedValue(500);
@@ -31,19 +31,30 @@ export default function Pve() {
     roundCountdown,
     currentRound,
     showChoice,
+    countEnd,
     setRoundCountdown,
     setShowChoice,
+    setCountEnd,
   } = useRoundCountdown(
     5,
     isReady,
-    playerChoice,
-    botChoice,
-    setPlayerChoice,
-    setBotChoice,
+    firstPlayerChoice,
+    secondPlayerChoice,
+    setFirstPlayerChoice,
+    setSecondPlayerChoice,
     setScore,
-    "player",
-    "bot"
+    "firstPlayer",
+    "secondPlayer",
+    firstPlayerTurn
   );
+
+  const handleFirstPlayer = (choice) => {
+    setFirstPlayerChoice(choice);
+  };
+
+  const handleSecondPlayer = (choice) => {
+    setSecondPlayerChoice(choice);
+  };
 
   useEffect(() => {
     Animated.timing(translateY, {
@@ -53,8 +64,16 @@ export default function Pve() {
     }).start();
   }, [showChoice]);
 
+  useEffect(() => {
+    if (countEnd && firstPlayerTurn) {
+      setFirstPlayerTurn(false);
+      setRoundCountdown(5);
+      setCountEnd(false);
+    }
+  }, [countEnd]);
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <LinearGradient
         style={styles.background}
         colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
@@ -68,44 +87,47 @@ export default function Pve() {
             <Text style={styles.roundCountdown}>{roundCountdown}</Text>
           </View>
         )}
-        <TouchableOpacity
-          onPress={() =>
-            nextRound(
-              setPlayerChoice,
-              setBotChoice,
-              setShowChoice,
-              setRoundCountdown
-            )
-          }
-        >
-          <Text>NEXT ROUND</Text>
-        </TouchableOpacity>
-        <Text>Player Score {score.player}</Text>
-        <Text>Bot Score {score.bot}</Text>
-        <Text>{currentRound >= rounds && "ROUND END"}</Text>
       </View>
-      {isReady && !showChoice && <WheelChoice setChoice={setPlayerChoice} />}
+      <Text>
+        FP: {score.firstPlayer} SP: {score.secondPlayer}
+      </Text>
+      {firstPlayerTurn && isReady && (
+        <WheelChoice setChoice={handleFirstPlayer} />
+      )}
+      {!firstPlayerTurn && !showChoice && (
+        <View style={styles.oppositeWheel}>
+          <WheelChoice setChoice={handleSecondPlayer} isOpposite={true} />
+        </View>
+      )}
       {showChoice && (
         <Animated.View
           style={{
-            ...styles.playerHandContainer,
+            position: "absolute",
+            bottom: -100,
+            width: 250,
+            height: 500,
+            zIndex: 0,
             transform: [{ translateY: translateY }],
           }}
         >
-          <HandImage choice={playerChoice} />
+          <HandImage choice={firstPlayerChoice} />
         </Animated.View>
       )}
       {showChoice && (
         <Animated.View
           style={{
-            ...styles.opponentHandContainer,
+            position: "absolute",
+            top: -100,
+            width: 250,
+            height: 500,
+            zIndex: 0,
             transform: [{ rotate: "180deg" }, { translateY: translateY }],
           }}
         >
-          <HandImage choice={botChoice} />
+          <HandImage choice={secondPlayerChoice} />
         </Animated.View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -147,18 +169,9 @@ const styles = StyleSheet.create({
     fontSize: 36,
     textAlign: "center",
   },
-  playerHandContainer: {
+  oppositeWheel: {
     position: "absolute",
-    bottom: -100,
-    width: 230,
-    height: 460,
-    zIndex: 0,
-  },
-  opponentHandContainer: {
-    position: "absolute",
-    top: -100,
-    width: 230,
-    height: 460,
-    zIndex: 0,
+    top: 0,
+    transform: [{ rotate: "180deg" }],
   },
 });
