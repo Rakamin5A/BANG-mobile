@@ -1,4 +1,4 @@
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableHighlight, View } from "react-native";
 
 import { colors } from "../constants";
 
@@ -6,39 +6,40 @@ export default function WheelChoice({ setChoice }) {
   return (
     <View style={styles.container}>
       <View style={styles.outerCircle}>
-        <TouchableOpacity
+        <TouchableHighlight
           style={{ ...styles.choice, top: 65, left: 20 }}
+          underlayColor="#C8C8C8"
           onPress={() => setChoice(0)}
         >
           <Image
             source={require("../assets/choice-rock.png")}
             style={styles.choiceIcon}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableHighlight>
+        <TouchableHighlight
           style={{
             ...styles.choice,
-            top: 10,
-            width: "100%",
-            flex: 1,
-            alignItems: "center",
+            top: 5,
+            left: 125,
           }}
+          underlayColor="#C8C8C8"
           onPress={() => setChoice(1)}
         >
           <Image
             source={require("../assets/choice-paper.png")}
             style={styles.choiceIcon}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableHighlight>
+        <TouchableHighlight
           style={{ ...styles.choice, top: 65, right: 20 }}
+          underlayColor="#C8C8C8"
           onPress={() => setChoice(2)}
         >
           <Image
             source={require("../assets/choice-scissors.png")}
             style={styles.choiceIcon}
           />
-        </TouchableOpacity>
+        </TouchableHighlight>
       </View>
       <View style={styles.innerCircle} />
     </View>
@@ -56,10 +57,10 @@ const styles = StyleSheet.create({
   outerCircle: {
     position: "relative",
     backgroundColor: "rgba(217,217,217,0.5)",
-    width: 280,
-    height: 280,
+    width: 320,
+    height: 320,
     borderRadius: "100%",
-    bottom: -140,
+    bottom: -160,
     borderWidth: 2,
     borderColor: "black",
     marginTop: "auto",
@@ -67,15 +68,17 @@ const styles = StyleSheet.create({
   innerCircle: {
     position: "absolute",
     backgroundColor: colors.auth.primary,
-    width: 140,
-    height: 140,
+    width: 160,
+    height: 160,
     borderRadius: "100%",
-    bottom: -70,
+    bottom: -80,
     borderWidth: 2,
     borderColor: "black",
   },
   choice: {
     position: "absolute",
+    borderRadius: "100%",
+    padding: 10,
   },
   choiceIcon: {
     width: 50,
