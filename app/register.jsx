@@ -25,6 +25,10 @@ export default function Register() {
         style={styles.background}
         colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
       />
+      <Image
+        source={require("../assets/background-register.png")}
+        style={styles.background}
+      />
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.registerText}>Daftar</Text>
       <View style={styles.wrapper}>
@@ -104,5 +108,6 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     color: colors.auth.primary,
+    textDecorationLine: "underline",
   },
 });

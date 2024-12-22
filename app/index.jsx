@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Link, router } from "expo-router";
@@ -24,9 +23,13 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <StatusBar hidden />
-      <LinearGradient
+      {/* <LinearGradient
         style={styles.background}
         colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
+      /> */}
+      <Image
+        source={require("../assets/background-login.png")}
+        style={styles.background}
       />
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.loginText}>Masuk</Text>
@@ -57,7 +60,7 @@ export default function Index() {
       <Text style={styles.registerText}>
         Belum punya akun?{" "}
         <Link href="/register" style={styles.registerLink}>
-          Buat akun baru
+          <Text>Buat akun baru</Text>
         </Link>
       </Text>
     </View>
@@ -104,5 +107,6 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     color: colors.auth.primary,
+    textDecorationLine: "underline",
   },
 });
