@@ -36,7 +36,7 @@ export default function Index() {
   const login = async () => {
     try {
       LOGIN_SCHEMA.parse(loginForm);
-      router.replace("/(home)");
+      router.push("/(home)");
     } catch (error) {
       const errors = {};
 
