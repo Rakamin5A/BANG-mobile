@@ -2,13 +2,28 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Link } from "expo-router";
+import { z } from "zod";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { colors } from "../constants";
 
+const REGISTER_SCHEMA = z.object({
+  username: z.string().min(2, { message: "Username tidak boleh kosong" }),
+  password: z.string().min(2, { message: "Password tidak boleh kosong" }),
+  name: z.string().min(2, { message: "Nama tidak boleh kosong" }),
+  email: z.string().email().min(2, { message: "Email tidak boleh kosong" }),
+});
+
 export default function Register() {
   const [registerForm, setRegisterForm] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    name: "",
     username: "",
     email: "",
     password: "",
@@ -16,6 +31,27 @@ export default function Register() {
 
   const handleOnChangeText = (key, value) => {
     setRegisterForm({ ...registerForm, [key]: value });
+
+    try {
+      REGISTER_SCHEMA.pick({ key: true }).parse({ [key]: value });
+      setErrors((prev) => ({ ...prev, [key]: "" }));
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, [key]: error.errors[0].message }));
+    }
+  };
+
+  const register = async () => {
+    try {
+      REGISTER_SCHEMA.parse(registerForm);
+    } catch (error) {
+      const errors = {};
+
+      error.errors.forEach((error) => {
+        errors[error.path] = error.message;
+      });
+
+      setErrors(errors);
+    }
   };
 
   return (
@@ -31,33 +67,60 @@ export default function Register() {
       />
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.registerText}>Daftar</Text>
-      <View style={styles.wrapper}>
+      <View style={styles.mainWrapper}>
         <View style={styles.inputContainer}>
-          <Input
-            name="email"
-            placeholder="Email"
-            type="email-address"
-            state={registerForm.email}
-            handleOnChangeText={handleOnChangeText}
-          />
-          <Input
-            name="username"
-            placeholder="Username"
-            state={registerForm.username}
-            handleOnChangeText={handleOnChangeText}
-          />
-          <Input
-            name="password"
-            placeholder="Password"
-            state={registerForm.password}
-            handleOnChangeText={handleOnChangeText}
-            isPassword={true}
-          />
+          <View style={styles.inputWrapper}>
+            <Input
+              name="name"
+              placeholder="Nama"
+              state={registerForm.name}
+              handleOnChangeText={handleOnChangeText}
+            />
+            {errors?.name && (
+              <Text style={styles.errorMessage}>{errors.name}</Text>
+            )}
+          </View>
+          <View style={styles.inputWrapper}>
+            <Input
+              name="username"
+              placeholder="Username"
+              state={registerForm.username}
+              handleOnChangeText={handleOnChangeText}
+            />
+            {errors?.username && (
+              <Text style={styles.errorMessage}>{errors.username}</Text>
+            )}
+          </View>
+          <View style={styles.inputWrapper}>
+            <Input
+              name="email"
+              placeholder="Email"
+              type="email-address"
+              state={registerForm.email}
+              handleOnChangeText={handleOnChangeText}
+            />
+            {errors?.email && (
+              <Text style={styles.errorMessage}>{errors.email}</Text>
+            )}
+          </View>
+          <View style={styles.inputWrapper}>
+            <Input
+              name="password"
+              placeholder="Password"
+              state={registerForm.password}
+              handleOnChangeText={handleOnChangeText}
+              isPassword={true}
+            />
+            {errors?.password && (
+              <Text style={styles.errorMessage}>{errors.password}</Text>
+            )}
+          </View>
         </View>
         <Button
           primary={colors.auth.primary}
           shadow={colors.auth.secondary}
           text="Daftar"
+          handlePress={register}
         />
       </View>
       <Text style={styles.loginText}>
@@ -92,7 +155,7 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     color: "#FFFFFF",
   },
-  wrapper: {
+  mainWrapper: {
     width: "100%",
     paddingHorizontal: 60,
   },
@@ -101,6 +164,13 @@ const styles = StyleSheet.create({
     gap: 25,
     marginTop: 22,
     marginBottom: 31,
+  },
+  inputWrapper: {
+    gap: 8,
+  },
+  errorMessage: {
+    color: "#FF7F7F",
+    fontWeight: 700,
   },
   loginText: {
     marginTop: 18,

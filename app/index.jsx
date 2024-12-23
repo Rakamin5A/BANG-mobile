@@ -1,60 +1,94 @@
 import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Link, router } from "expo-router";
+import { z } from "zod";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { colors } from "../constants";
+
+const LOGIN_SCHEMA = z.object({
+  username: z.string().min(1, { message: "Username tidak boleh kosong" }),
+  password: z.string().min(1, { message: "Password tidak boleh kosong" }),
+});
 
 export default function Index() {
   const [loginForm, setLoginForm] = useState({
     username: "",
     password: "",
   });
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+  });
 
   const handleOnChangeText = (key, value) => {
     setLoginForm({ ...loginForm, [key]: value });
+
+    try {
+      LOGIN_SCHEMA.pick({ key: true }).parse({ [key]: value });
+      setErrors((prev) => ({ ...prev, [key]: "" }));
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, [key]: error.errors[0].message }));
+    }
   };
 
-  const handleLogin = () => {
-    router.replace("/(home)");
+  const login = async () => {
+    try {
+      LOGIN_SCHEMA.parse(loginForm);
+      router.replace("/(home)");
+    } catch (error) {
+      const errors = {};
+
+      error.errors.forEach((error) => {
+        errors[error.path] = error.message;
+      });
+
+      setErrors(errors);
+    }
   };
 
   return (
     <View style={styles.container}>
       <StatusBar hidden />
-      {/* <LinearGradient
-        style={styles.background}
-        colors={["#9AC6FF", "#5D68A1", "#002C5F"]}
-      /> */}
       <Image
         source={require("../assets/background-login.png")}
         style={styles.background}
       />
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.loginText}>Masuk</Text>
-      <View style={styles.wrapper}>
+      <View style={styles.mainWrapper}>
         <View style={styles.inputContainer}>
-          <Input
-            name="username"
-            placeholder="Username"
-            type="text"
-            state={loginForm.username}
-            handleOnChangeText={handleOnChangeText}
-          />
-          <Input
-            name="password"
-            placeholder="Password"
-            state={loginForm.password}
-            handleOnChangeText={handleOnChangeText}
-            isPassword={true}
-          />
+          <View style={styles.inputWrapper}>
+            <Input
+              name="username"
+              placeholder="Username"
+              type="text"
+              state={loginForm.username}
+              handleOnChangeText={handleOnChangeText}
+            />
+            {errors?.username && (
+              <Text style={styles.errorMessage}>{errors.username}</Text>
+            )}
+          </View>
+          <View style={styles.inputWrapper}>
+            <Input
+              name="password"
+              placeholder="Password"
+              state={loginForm.password}
+              handleOnChangeText={handleOnChangeText}
+              isPassword={true}
+            />
+            {errors?.password && (
+              <Text style={styles.errorMessage}>{errors.password}</Text>
+            )}
+          </View>
         </View>
         <Button
           primary={colors.auth.primary}
           shadow={colors.auth.secondary}
           text="Masuk"
-          handlePress={handleLogin}
+          handlePress={login}
         />
       </View>
       <Text style={styles.registerText}>
@@ -90,7 +124,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginTop: 22,
   },
-  wrapper: {
+  mainWrapper: {
     width: "100%",
     paddingHorizontal: 60,
   },
@@ -100,6 +134,13 @@ const styles = StyleSheet.create({
     marginTop: 22,
     marginBottom: 31,
     width: "100%",
+  },
+  inputWrapper: {
+    gap: 8,
+  },
+  errorMessage: {
+    color: "#FF7F7F",
+    fontWeight: 700,
   },
   registerText: {
     marginTop: 18,

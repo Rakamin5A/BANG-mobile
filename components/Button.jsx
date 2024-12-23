@@ -6,9 +6,14 @@ export default function Button({
   color = "#FFFFFF",
   text,
   handlePress,
+  disabled = false,
 }) {
   return (
-    <TouchableOpacity style={styles.button} onPress={handlePress}>
+    <TouchableOpacity
+      style={{ ...styles.button, opacity: disabled && 0.5 }}
+      disabled={disabled}
+      onPress={handlePress}
+    >
       <View style={{ ...styles.shadow, backgroundColor: shadow }}>
         <View style={{ ...styles.primary, backgroundColor: primary }}>
           <Text style={{ ...styles.text, color }}>{text}</Text>
