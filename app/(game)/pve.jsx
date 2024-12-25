@@ -85,8 +85,6 @@ export default function Pve() {
     }
   }, [gameCountdown]);
 
-  console.log("SCORE", score);
-
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -103,24 +101,17 @@ export default function Pve() {
           </View>
         )}
       </View>
+      {showChoice && currentRound < rounds && (
+        <View style={styles.winnerImageContainer}>
+          <WinnerImage choice={winner.choice} />
+        </View>
+      )}
       {showChoice && currentRound === rounds && (
         <WinnerModal
           firstPlayerScore={score.player}
           secondPlayerScore={score.bot}
           replayMatch={handleReplayMatch}
         />
-      )}
-      {showChoice && currentRound < rounds && (
-        <View
-          style={{
-            position: "absolute",
-            width: 400,
-            height: 400,
-            zIndex: 999,
-          }}
-        >
-          <WinnerImage choice={winner.choice} />
-        </View>
       )}
       {isReady && !showChoice && <WheelChoice setChoice={setChoice} />}
       {currentRound < rounds && isReady && (
@@ -133,7 +124,7 @@ export default function Pve() {
       {showChoice && (
         <Animated.View
           style={{
-            ...styles.playerHandContainer,
+            ...styles.firstPlayerHandContainer,
             transform: [{ translateY: translateY }],
           }}
         >
@@ -150,7 +141,7 @@ export default function Pve() {
       {showChoice && (
         <Animated.View
           style={{
-            ...styles.opponentHandContainer,
+            ...styles.secondPlayerHandContainer,
             transform: [{ rotate: "180deg" }, { translateY: translateY }],
           }}
         >
@@ -199,14 +190,20 @@ const styles = StyleSheet.create({
     fontSize: 36,
     textAlign: "center",
   },
-  playerHandContainer: {
+  winnerImageContainer: {
+    position: "absolute",
+    width: 400,
+    height: 400,
+    zIndex: 999,
+  },
+  firstPlayerHandContainer: {
     position: "absolute",
     bottom: -100,
     width: 230,
     height: 460,
     zIndex: 0,
   },
-  opponentHandContainer: {
+  secondPlayerHandContainer: {
     position: "absolute",
     top: -100,
     width: 230,

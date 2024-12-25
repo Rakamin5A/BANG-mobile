@@ -15,33 +15,42 @@ import HandImage from "../../components/HandImage";
 import { useGameMode } from "../../contexts/GameModeContext";
 import useCountdown from "../../hooks/useCountdown";
 import useRoundCountdown from "../../hooks/useRoundCountdown";
+import { nextRound } from "../../utils";
+import WinnerImage from "../../components/WinnerImage";
+import WinnerModal from "../../components/WinnerModal";
+import ScoreIndicator from "../../components/ScoreIndicator";
 
 export default function OffPvp() {
   const [firstPlayerTurn, setFirstPlayerTurn] = useState(true);
-  const [firstPlayerChoice, setFirstPlayerChoice] = useState(null);
-  const [secondPlayerChoice, setSecondPlayerChoice] = useState(null);
+  const [choice, setChoice] = useState({
+    firstPlayer: null,
+    secondPlayer: null,
+  });
   const [score, setScore] = useState({
     firstPlayer: 0,
     secondPlayer: 0,
   });
   const { rounds } = useGameMode();
   const translateY = useAnimatedValue(500);
-  const { countdown: gameCountdown, isReady, resetCountdown } = useCountdown(3);
+  const { gameCountdown, isReady, setGameCountdown, setIsReady } =
+    useCountdown(3);
   const {
     roundCountdown,
     currentRound,
     showChoice,
     countEnd,
+    winner,
+    scoreIndicator,
     setRoundCountdown,
     setShowChoice,
     setCountEnd,
+    setCurrentRound,
+    setScoreIndicator,
   } = useRoundCountdown(
     5,
     isReady,
-    firstPlayerChoice,
-    secondPlayerChoice,
-    setFirstPlayerChoice,
-    setSecondPlayerChoice,
+    choice,
+    setChoice,
     setScore,
     "firstPlayer",
     "secondPlayer",
@@ -49,11 +58,26 @@ export default function OffPvp() {
   );
 
   const handleFirstPlayer = (choice) => {
-    setFirstPlayerChoice(choice);
+    setChoice((prev) => ({ ...prev, firstPlayer: choice }));
   };
 
   const handleSecondPlayer = (choice) => {
-    setSecondPlayerChoice(choice);
+    setChoice((prev) => ({ ...prev, secondPlayer: choice }));
+  };
+
+  const handleReplayMatch = () => {
+    replayMatch(
+      setChoice,
+      setShowChoice,
+      setGameCountdown,
+      setRoundCountdown,
+      setIsReady,
+      setScore,
+      setCurrentRound,
+      setScoreIndicator,
+      "firstPlayer",
+      "secondPlayer"
+    );
   };
 
   useEffect(() => {
@@ -62,15 +86,32 @@ export default function OffPvp() {
       duration: 300,
       useNativeDriver: true,
     }).start();
+
+    if (showChoice && currentRound < rounds) {
+      setGameCountdown(3);
+    }
   }, [showChoice]);
 
   useEffect(() => {
-    if (countEnd && firstPlayerTurn) {
-      setFirstPlayerTurn(false);
+    if (countEnd && currentRound < rounds) {
+      setFirstPlayerTurn((prev) => !prev);
       setRoundCountdown(5);
       setCountEnd(false);
     }
   }, [countEnd]);
+
+  useEffect(() => {
+    // console.log(isReady, gameCountdown, currentRound, rounds);
+    if (isReady && gameCountdown === 0 && currentRound < rounds) {
+      nextRound(
+        setChoice,
+        setShowChoice,
+        setRoundCountdown,
+        "firstPlayer",
+        "secondPlayer"
+      );
+    }
+  }, [gameCountdown]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,17 +122,33 @@ export default function OffPvp() {
       <Image source={require("../../assets/logo.png")} style={styles.logo} />
       <View style={styles.countdownContainer}>
         {!isReady && <Text style={styles.gameCountdown}>{gameCountdown}</Text>}
-        {isReady && (
+        {isReady && !showChoice && (
           <View>
             <Text style={styles.roundCountdown}>Giliranmu!</Text>
             <Text style={styles.roundCountdown}>{roundCountdown}</Text>
           </View>
         )}
       </View>
-      <Text>
-        FP: {score.firstPlayer} SP: {score.secondPlayer}
-      </Text>
-      {firstPlayerTurn && isReady && (
+      {showChoice && currentRound < rounds && (
+        <View
+          style={{
+            position: "absolute",
+            width: 400,
+            height: 400,
+            zIndex: 999,
+          }}
+        >
+          <WinnerImage choice={winner.choice} />
+        </View>
+      )}
+      {showChoice && currentRound === rounds && (
+        <WinnerModal
+          firstPlayerScore={score.firstPlayer}
+          secondPlayerScore={score.secondPlayer}
+          replayMatch={handleReplayMatch}
+        />
+      )}
+      {firstPlayerTurn && isReady && !showChoice && (
         <WheelChoice setChoice={handleFirstPlayer} />
       )}
       {!firstPlayerTurn && !showChoice && (
@@ -99,32 +156,38 @@ export default function OffPvp() {
           <WheelChoice setChoice={handleSecondPlayer} isOpposite={true} />
         </View>
       )}
-      {showChoice && (
-        <Animated.View
-          style={{
-            position: "absolute",
-            bottom: -100,
-            width: 250,
-            height: 500,
-            zIndex: 0,
-            transform: [{ translateY: translateY }],
-          }}
-        >
-          <HandImage choice={firstPlayerChoice} />
-        </Animated.View>
+      {currentRound < rounds && isReady && (
+        <ScoreIndicator
+          rounds={rounds}
+          scoreIndicator={scoreIndicator}
+          isFirstPlayer={true}
+        />
       )}
       {showChoice && (
         <Animated.View
           style={{
-            position: "absolute",
-            top: -100,
-            width: 250,
-            height: 500,
-            zIndex: 0,
+            ...styles.firstPlayerHandContainer,
+            transform: [{ translateY: translateY }],
+          }}
+        >
+          <HandImage choice={choice.firstPlayer} />
+        </Animated.View>
+      )}
+      {currentRound < rounds && isReady && (
+        <ScoreIndicator
+          rounds={rounds}
+          scoreIndicator={scoreIndicator}
+          isFirstPlayer={false}
+        />
+      )}
+      {showChoice && (
+        <Animated.View
+          style={{
+            ...styles.secondPlayerHandContainer,
             transform: [{ rotate: "180deg" }, { translateY: translateY }],
           }}
         >
-          <HandImage choice={secondPlayerChoice} />
+          <HandImage choice={choice.secondPlayer} />
         </Animated.View>
       )}
     </SafeAreaView>
@@ -169,9 +232,29 @@ const styles = StyleSheet.create({
     fontSize: 36,
     textAlign: "center",
   },
+  winnerImageContainer: {
+    position: "absolute",
+    width: 400,
+    height: 400,
+    zIndex: 999,
+  },
   oppositeWheel: {
     position: "absolute",
     top: 0,
     transform: [{ rotate: "180deg" }],
+  },
+  firstPlayerHandContainer: {
+    position: "absolute",
+    bottom: -100,
+    width: 230,
+    height: 460,
+    zIndex: 0,
+  },
+  secondPlayerHandContainer: {
+    position: "absolute",
+    top: -100,
+    width: 250,
+    height: 500,
+    zIndex: 0,
   },
 });

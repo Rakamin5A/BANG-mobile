@@ -46,6 +46,8 @@ export const nextRound = (
   firstPlayer,
   secondPlayer
 ) => {
+  // console.log("NEXT ROUND");
+
   setChoice({ [firstPlayer]: null, [secondPlayer]: null });
   setShowChoice(false);
   setRoundCountdown(5);
