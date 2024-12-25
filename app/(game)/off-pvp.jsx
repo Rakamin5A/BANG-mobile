@@ -15,7 +15,7 @@ import HandImage from "../../components/HandImage";
 import { useGameMode } from "../../contexts/GameModeContext";
 import useCountdown from "../../hooks/useCountdown";
 import useRoundCountdown from "../../hooks/useRoundCountdown";
-import { nextRound } from "../../utils";
+import { nextRound, replayMatch } from "../../utils";
 import WinnerImage from "../../components/WinnerImage";
 import WinnerModal from "../../components/WinnerModal";
 import ScoreIndicator from "../../components/ScoreIndicator";
@@ -66,6 +66,8 @@ export default function OffPvp() {
   };
 
   const handleReplayMatch = () => {
+    setFirstPlayerTurn((prev) => !prev);
+    setCountEnd(false);
     replayMatch(
       setChoice,
       setShowChoice,
@@ -101,7 +103,6 @@ export default function OffPvp() {
   }, [countEnd]);
 
   useEffect(() => {
-    // console.log(isReady, gameCountdown, currentRound, rounds);
     if (isReady && gameCountdown === 0 && currentRound < rounds) {
       nextRound(
         setChoice,

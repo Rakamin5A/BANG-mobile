@@ -8,7 +8,12 @@ import {
 
 import { colors } from "../constants";
 
-export default function WheelChoice({ setChoice }) {
+const IMAGES = {
+  0: require("../assets/random-black.png"),
+  1: require("../assets/random-white.png"),
+};
+
+export default function WheelChoice({ setChoice, isOpposite }) {
   return (
     <View style={styles.container}>
       <View style={styles.outerCircle}>
@@ -47,10 +52,15 @@ export default function WheelChoice({ setChoice }) {
           />
         </TouchableHighlight>
       </View>
-      <View style={styles.innerCircle}>
+      <View
+        style={{
+          ...styles.innerCircle,
+          backgroundColor: !isOpposite ? colors.auth.primary : "#002C5F",
+        }}
+      >
         <TouchableOpacity>
           <Image
-            source={require("../assets/random-black.png")}
+            source={!isOpposite ? IMAGES[0] : IMAGES[1]}
             style={{ ...styles.randomIcon, marginTop: 20 }}
           />
         </TouchableOpacity>
@@ -80,7 +90,6 @@ const styles = StyleSheet.create({
   },
   innerCircle: {
     position: "absolute",
-    backgroundColor: colors.auth.primary,
     width: 160,
     height: 160,
     borderRadius: "100%",
