@@ -5,32 +5,42 @@ import { calculateRoundResult, randomizeNumber } from "../utils";
 const useRoundCountdown = (
   initialCountdown,
   isReady,
-  firstPlayerChoice,
-  secondPlayerChoice,
-  setFirstPlayerChoice,
-  setSecondPlayerChoice,
+  choice,
+  setChoice,
   setScore,
-  firstPlayerScore,
-  secondPlayerScore,
+  firstPlayer,
+  secondPlayer,
   isFirstPlayerTurn = null
 ) => {
   const [roundCountdown, setRoundCountdown] = useState(initialCountdown);
   const [showChoice, setShowChoice] = useState(false);
   const [currentRound, setCurrentRound] = useState(0);
   const [countEnd, setCountEnd] = useState(false);
+  const [winner, setWinner] = useState({
+    player: null,
+    choice: null,
+  });
+  const [scoreIndicator, setScoreIndicator] = useState({});
 
   useEffect(() => {
     if (roundCountdown <= 0) {
       if (!isFirstPlayerTurn) {
         setShowChoice(true);
-        calculateRoundResult(
-          firstPlayerChoice,
-          secondPlayerChoice,
+        const winner = calculateRoundResult(
+          choice,
           setCurrentRound,
           setScore,
-          firstPlayerScore,
-          secondPlayerScore
+          firstPlayer,
+          secondPlayer
         );
+
+        setWinner({ player: winner?.player, choice: winner?.choice });
+
+        if (winner.player < 3)
+          setScoreIndicator((prev) => ({
+            ...prev,
+            [currentRound]: winner.player,
+          }));
       }
       setCountEnd(true);
       return;
@@ -42,14 +52,20 @@ const useRoundCountdown = (
           const newVal = oldVal - 1;
 
           if (newVal === 0) {
-            if (firstPlayerChoice === null) {
-              setFirstPlayerChoice(randomizeNumber());
+            if (choice[firstPlayer] === null) {
+              setChoice((prev) => ({
+                ...prev,
+                [firstPlayer]: randomizeNumber(),
+              }));
             }
             if (
-              secondPlayerChoice === null &&
+              choice[secondPlayer] === null &&
               (isFirstPlayerTurn === null || !isFirstPlayerTurn)
             ) {
-              setSecondPlayerChoice(randomizeNumber());
+              setChoice((prev) => ({
+                ...prev,
+                [secondPlayer]: randomizeNumber(),
+              }));
             }
           }
 
@@ -66,9 +82,13 @@ const useRoundCountdown = (
     currentRound,
     showChoice,
     countEnd,
+    winner,
+    scoreIndicator,
     setRoundCountdown,
     setShowChoice,
     setCountEnd,
+    setCurrentRound,
+    setScoreIndicator,
   };
 };
 

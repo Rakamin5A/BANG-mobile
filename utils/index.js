@@ -6,42 +6,72 @@ export const randomizeNumber = () => {
 };
 
 export const calculateRoundResult = (
-  firstPlayer,
-  secondPlayer,
+  choice,
   setCurrentRound,
   setScore,
-  firstPlayerScore,
-  secondPlayerScore
+  firstPlayer,
+  secondPlayer
 ) => {
-  if (firstPlayer === secondPlayer) {
+  if (choice[firstPlayer] === choice[secondPlayer]) {
     setCurrentRound((prev) => prev);
+
+    return { player: 3, choice: 3 };
   } else if (
-    (firstPlayer === 0 && secondPlayer === 2) ||
-    (firstPlayer === 1 && secondPlayer === 0) ||
-    (firstPlayer === 2 && secondPlayer === 1)
+    (choice[firstPlayer] === 0 && choice[secondPlayer] === 2) ||
+    (choice[firstPlayer] === 1 && choice[secondPlayer] === 0) ||
+    (choice[firstPlayer] === 2 && choice[secondPlayer] === 1)
   ) {
-    setScore((score) => ({
-      ...score,
-      [firstPlayerScore]: score[firstPlayerScore] + 1,
+    setScore((prev) => ({
+      ...prev,
+      [firstPlayer]: prev[firstPlayer] + 1,
     }));
     setCurrentRound((prev) => prev + 1);
+
+    return { player: 1, choice: choice[firstPlayer] };
   } else {
-    setScore((score) => ({
-      ...score,
-      [secondPlayerScore]: score[secondPlayerScore] + 1,
+    setScore((prev) => ({
+      ...prev,
+      [secondPlayer]: prev[secondPlayer] + 1,
     }));
     setCurrentRound((prev) => prev + 1);
+
+    return { player: 2, choice: choice[secondPlayer] };
   }
 };
 
 export const nextRound = (
-  setFirstPlayerChoice,
-  setSecondPlayerChoice,
+  setChoice,
   setShowChoice,
-  setRoundCountdown
+  setRoundCountdown,
+  firstPlayer,
+  secondPlayer
 ) => {
-  setFirstPlayerChoice(null);
-  setSecondPlayerChoice(null);
+  setChoice({ [firstPlayer]: null, [secondPlayer]: null });
   setShowChoice(false);
   setRoundCountdown(5);
+};
+
+export const replayMatch = (
+  setChoice,
+  setShowChoice,
+  setGameCountdown,
+  setRoundCountdown,
+  setIsReady,
+  setScore,
+  setCurrentRound,
+  setScoreIndicator,
+  firstPlayer,
+  secondPlayer
+) => {
+  setChoice({ [firstPlayer]: null, [secondPlayer]: null });
+  setShowChoice(false);
+  setGameCountdown(3);
+  setRoundCountdown(5);
+  setIsReady(false);
+  setScore({
+    [firstPlayer]: 0,
+    [secondPlayer]: 0,
+  });
+  setCurrentRound(0);
+  setScoreIndicator({});
 };

@@ -46,20 +46,22 @@ export default function Index() {
         <Text style={styles.cardHeading}>
           Selamat datang di arena Bang! Berikut panduan main di arena kami.
         </Text>
-        <View style={styles.guide}>
-          <Image source={require("../../assets/home-rock.png")} />
-          <Text style={styles.guideText}>menang melawan</Text>
-          <Image source={require("../../assets/home-scissors.png")} />
-        </View>
-        <View style={styles.guide}>
-          <Image source={require("../../assets/home-scissors.png")} />
-          <Text style={styles.guideText}>menang melawan</Text>
-          <Image source={require("../../assets/home-paper.png")} />
-        </View>
-        <View style={styles.guide}>
-          <Image source={require("../../assets/home-paper.png")} />
-          <Text style={styles.guideText}>menang melawan</Text>
-          <Image source={require("../../assets/home-rock.png")} />
+        <View style={styles.guideContainer}>
+          <View style={styles.guide}>
+            <Image source={require("../../assets/home-rock.png")} />
+            <Text style={styles.guideText}>menang melawan</Text>
+            <Image source={require("../../assets/home-scissors.png")} />
+          </View>
+          <View style={styles.guide}>
+            <Image source={require("../../assets/home-scissors.png")} />
+            <Text style={styles.guideText}>menang melawan</Text>
+            <Image source={require("../../assets/home-paper.png")} />
+          </View>
+          <View style={styles.guide}>
+            <Image source={require("../../assets/home-paper.png")} />
+            <Text style={styles.guideText}>menang melawan</Text>
+            <Image source={require("../../assets/home-rock.png")} />
+          </View>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -87,7 +89,6 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     height: "100%",
-    objectFit: "cover",
     width: "auto",
   },
   header: {
@@ -123,10 +124,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 50,
   },
+  guideContainer: {
+    display: "flex",
+    gap: 20,
+  },
   guide: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
     width: "auto",
     gap: 30,

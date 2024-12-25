@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   useAnimatedValue,
   View,
 } from "react-native";
@@ -12,38 +11,61 @@ import { useEffect, useState } from "react";
 
 import WheelChoice from "../../components/WheelChoice";
 import HandImage from "../../components/HandImage";
-import { nextRound } from "../../utils";
+import { nextRound, replayMatch } from "../../utils";
 import { useGameMode } from "../../contexts/GameModeContext";
 import useCountdown from "../../hooks/useCountdown";
 import useRoundCountdown from "../../hooks/useRoundCountdown";
+import WinnerImage from "../../components/WinnerImage";
+import ScoreIndicator from "../../components/ScoreIndicator";
+import WinnerModal from "../../components/WinnerModal";
 
 export default function Pve() {
-  const [playerChoice, setPlayerChoice] = useState(null);
-  const [botChoice, setBotChoice] = useState(null);
+  const [choice, setChoice] = useState({
+    player: null,
+    bot: null,
+  });
   const [score, setScore] = useState({
     player: 0,
     bot: 0,
   });
   const { rounds } = useGameMode();
   const translateY = useAnimatedValue(500);
-  const { countdown: gameCountdown, isReady, resetCountdown } = useCountdown(3);
+  const { gameCountdown, isReady, setGameCountdown, setIsReady } =
+    useCountdown(3);
   const {
     roundCountdown,
     currentRound,
     showChoice,
+    winner,
+    scoreIndicator,
     setRoundCountdown,
     setShowChoice,
+    setCurrentRound,
+    setScoreIndicator,
   } = useRoundCountdown(
     5,
     isReady,
-    playerChoice,
-    botChoice,
-    setPlayerChoice,
-    setBotChoice,
+    choice,
+    setChoice,
     setScore,
     "player",
     "bot"
   );
+
+  const handleReplayMatch = () => {
+    replayMatch(
+      setChoice,
+      setShowChoice,
+      setGameCountdown,
+      setRoundCountdown,
+      setIsReady,
+      setScore,
+      setCurrentRound,
+      setScoreIndicator,
+      "player",
+      "bot"
+    );
+  };
 
   useEffect(() => {
     Animated.timing(translateY, {
@@ -51,7 +73,19 @@ export default function Pve() {
       duration: 300,
       useNativeDriver: true,
     }).start();
+
+    if (showChoice && currentRound < rounds) {
+      setGameCountdown(3);
+    }
   }, [showChoice]);
+
+  useEffect(() => {
+    if (isReady && gameCountdown === 0 && currentRound < rounds) {
+      nextRound(setChoice, setShowChoice, setRoundCountdown, "player", "bot");
+    }
+  }, [gameCountdown]);
+
+  console.log("SCORE", score);
 
   return (
     <View style={styles.container}>
@@ -62,29 +96,40 @@ export default function Pve() {
       <Image source={require("../../assets/logo.png")} style={styles.logo} />
       <View style={styles.countdownContainer}>
         {!isReady && <Text style={styles.gameCountdown}>{gameCountdown}</Text>}
-        {isReady && (
+        {isReady && !showChoice && (
           <View>
             <Text style={styles.roundCountdown}>Giliranmu!</Text>
             <Text style={styles.roundCountdown}>{roundCountdown}</Text>
           </View>
         )}
-        <TouchableOpacity
-          onPress={() =>
-            nextRound(
-              setPlayerChoice,
-              setBotChoice,
-              setShowChoice,
-              setRoundCountdown
-            )
-          }
-        >
-          <Text>NEXT ROUND</Text>
-        </TouchableOpacity>
-        <Text>Player Score {score.player}</Text>
-        <Text>Bot Score {score.bot}</Text>
-        <Text>{currentRound >= rounds && "ROUND END"}</Text>
       </View>
-      {isReady && !showChoice && <WheelChoice setChoice={setPlayerChoice} />}
+      {showChoice && currentRound === rounds && (
+        <WinnerModal
+          firstPlayerScore={score.player}
+          secondPlayerScore={score.bot}
+          replayMatch={handleReplayMatch}
+        />
+      )}
+      {showChoice && currentRound < rounds && (
+        <View
+          style={{
+            position: "absolute",
+            width: 400,
+            height: 400,
+            zIndex: 999,
+          }}
+        >
+          <WinnerImage choice={winner.choice} />
+        </View>
+      )}
+      {isReady && !showChoice && <WheelChoice setChoice={setChoice} />}
+      {currentRound < rounds && isReady && (
+        <ScoreIndicator
+          rounds={rounds}
+          scoreIndicator={scoreIndicator}
+          isFirstPlayer={true}
+        />
+      )}
       {showChoice && (
         <Animated.View
           style={{
@@ -92,8 +137,15 @@ export default function Pve() {
             transform: [{ translateY: translateY }],
           }}
         >
-          <HandImage choice={playerChoice} />
+          <HandImage choice={choice.player} />
         </Animated.View>
+      )}
+      {currentRound < rounds && isReady && (
+        <ScoreIndicator
+          rounds={rounds}
+          scoreIndicator={scoreIndicator}
+          isFirstPlayer={false}
+        />
       )}
       {showChoice && (
         <Animated.View
@@ -102,7 +154,7 @@ export default function Pve() {
             transform: [{ rotate: "180deg" }, { translateY: translateY }],
           }}
         >
-          <HandImage choice={botChoice} />
+          <HandImage choice={choice.bot} />
         </Animated.View>
       )}
     </View>

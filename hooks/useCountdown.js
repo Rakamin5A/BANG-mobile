@@ -6,7 +6,7 @@ const useCountdown = (initialValue) => {
 
   useEffect(() => {
     if (countdown <= 0) {
-      setIsReady(true);
+      if (!isReady) setIsReady(true);
       return;
     }
 
@@ -17,7 +17,7 @@ const useCountdown = (initialValue) => {
     return () => clearInterval(interval);
   }, [countdown]);
 
-  return { countdown, isReady, resetCountdown: setCountdown };
+  return { gameCountdown: countdown, isReady, setGameCountdown: setCountdown, setIsReady };
 };
 
 export default useCountdown;

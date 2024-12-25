@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 
 import Button from "../../components/Button";
@@ -20,9 +19,9 @@ export default function Rounds() {
   return (
     <View style={styles.container}>
       <StatusBar hidden />
-      <LinearGradient
+      <Image
+        source={require("../../assets/background-home.png")}
         style={styles.background}
-        colors={["#FCFF9A", "#FFBA4B", "#FD7F02"]}
       />
       <BackButton />
       <View style={styles.buttonContainer}>
@@ -55,6 +54,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     height: "100%",
+    width: "auto",
   },
   roundsText: {
     fontSize: 20,

@@ -1,4 +1,10 @@
-import { Image, StyleSheet, TouchableHighlight, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { colors } from "../constants";
 
@@ -9,7 +15,7 @@ export default function WheelChoice({ setChoice }) {
         <TouchableHighlight
           style={{ ...styles.choice, top: 65, left: 20 }}
           underlayColor="#C8C8C8"
-          onPress={() => setChoice(0)}
+          onPress={() => setChoice((prev) => ({ ...prev, player: 0 }))}
         >
           <Image
             source={require("../assets/choice-rock.png")}
@@ -23,7 +29,7 @@ export default function WheelChoice({ setChoice }) {
             left: 125,
           }}
           underlayColor="#C8C8C8"
-          onPress={() => setChoice(1)}
+          onPress={() => setChoice((prev) => ({ ...prev, player: 1 }))}
         >
           <Image
             source={require("../assets/choice-paper.png")}
@@ -33,7 +39,7 @@ export default function WheelChoice({ setChoice }) {
         <TouchableHighlight
           style={{ ...styles.choice, top: 65, right: 20 }}
           underlayColor="#C8C8C8"
-          onPress={() => setChoice(2)}
+          onPress={() => setChoice((prev) => ({ ...prev, player: 2 }))}
         >
           <Image
             source={require("../assets/choice-scissors.png")}
@@ -41,7 +47,14 @@ export default function WheelChoice({ setChoice }) {
           />
         </TouchableHighlight>
       </View>
-      <View style={styles.innerCircle} />
+      <View style={styles.innerCircle}>
+        <TouchableOpacity>
+          <Image
+            source={require("../assets/random-black.png")}
+            style={{ ...styles.randomIcon, marginTop: 20 }}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -74,6 +87,11 @@ const styles = StyleSheet.create({
     bottom: -80,
     borderWidth: 2,
     borderColor: "black",
+  },
+  randomIcon: {
+    width: 40,
+    height: 40,
+    marginHorizontal: "auto",
   },
   choice: {
     position: "absolute",
