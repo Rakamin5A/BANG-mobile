@@ -1,12 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { z } from "zod";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { colors } from "../constants";
+import useAxios from "../hooks/useAxios";
 
 const REGISTER_SCHEMA = z.object({
   username: z.string().min(2, { message: "Username tidak boleh kosong" }),
@@ -28,6 +29,11 @@ export default function Register() {
     email: "",
     password: "",
   });
+  const { response } = useAxios({
+    method: "POST",
+    url: "/users/add",
+    data: registerForm,
+  });
 
   const handleOnChangeText = (key, value) => {
     setRegisterForm({ ...registerForm, [key]: value });
@@ -43,6 +49,10 @@ export default function Register() {
   const register = async () => {
     try {
       REGISTER_SCHEMA.parse(registerForm);
+
+      if (response.status === 201) {
+        router.replace("/");
+      }
     } catch (error) {
       const errors = {};
 

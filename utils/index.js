@@ -1,3 +1,5 @@
+import * as SecureStore from "expo-secure-store";
+
 export const randomizeNumber = () => {
   const noise = Math.floor(Math.random() * 0.5);
   const num = Math.floor(Math.random() * 3 + noise);
@@ -46,8 +48,6 @@ export const nextRound = (
   firstPlayer,
   secondPlayer
 ) => {
-  // console.log("NEXT ROUND");
-
   setChoice({ [firstPlayer]: null, [secondPlayer]: null });
   setShowChoice(false);
   setRoundCountdown(5);
@@ -76,4 +76,16 @@ export const replayMatch = (
   });
   setCurrentRound(0);
   setScoreIndicator({});
+};
+
+export const saveSecureStore = async (key, value) => {
+  await SecureStore.setItemAsync(key, value);
+};
+
+export const getSecureStore = async (key) => {
+  let result = await SecureStore.getItemAsync(key);
+
+  if (result) {
+    return result;
+  }
 };

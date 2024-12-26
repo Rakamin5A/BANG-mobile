@@ -6,19 +6,42 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 
 import Button from "../../components/Button";
 import { colors } from "../../constants";
-import { router } from "expo-router";
+import useAxios from "../../hooks/useAxios";
+import { getSecureStore } from "../../utils";
 
 export default function Index() {
+  const [token, setToken] = useState("");
+  const { response } = useAxios({
+    method: "GET",
+    url: "/user/me",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
   const handleStart = () => {
     router.push("/(game)");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await SecureStore.deleteItemAsync("token");
     router.dismissAll();
   };
+
+  const getToken = async () => {
+    const result = await getSecureStore("token");
+    setToken(result);
+  };
+
+  useEffect(() => {
+    getToken();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -33,7 +56,7 @@ export default function Index() {
             source={require("../../assets/avatar.png")}
             style={{ width: 80, height: 80 }}
           />
-          <Text style={styles.username}>Username</Text>
+          <Text style={styles.username}>{response?.data?.username}</Text>
         </View>
         <TouchableOpacity onPress={() => handleLogout()}>
           <Image
