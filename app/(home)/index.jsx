@@ -17,13 +17,7 @@ import { getSecureStore } from "../../utils";
 
 export default function Index() {
   const [token, setToken] = useState("");
-  const { response } = useAxios({
-    method: "GET",
-    url: "/user/me",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const { response, sendRequest } = useAxios();
 
   const handleStart = () => {
     router.push("/(game)");
@@ -42,6 +36,16 @@ export default function Index() {
   useEffect(() => {
     getToken();
   }, []);
+
+  useEffect(() => {
+    sendRequest({
+      method: "GET",
+      url: "/auth/profile",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }, [token]);
 
   return (
     <View style={styles.container}>

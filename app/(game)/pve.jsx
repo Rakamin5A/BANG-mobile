@@ -52,6 +52,10 @@ export default function Pve() {
     "bot"
   );
 
+  const handleChoice = (choice) => {
+    setChoice((prev) => ({ ...prev, player: choice }));
+  };
+
   const handleReplayMatch = () => {
     replayMatch(
       setChoice,
@@ -113,7 +117,7 @@ export default function Pve() {
           replayMatch={handleReplayMatch}
         />
       )}
-      {isReady && !showChoice && <WheelChoice setChoice={setChoice} />}
+      {isReady && !showChoice && <WheelChoice setChoice={handleChoice} />}
       {currentRound < rounds && isReady && (
         <ScoreIndicator
           rounds={rounds}

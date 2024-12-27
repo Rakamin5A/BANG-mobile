@@ -1,4 +1,4 @@
-import { Image, StatusBar, StyleSheet, View } from "react-native";
+import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 
 import Button from "../../components/Button";
@@ -38,6 +38,7 @@ export default function Index() {
       />
       <BackButton />
       <View style={styles.buttonContainer}>
+        <Text style={styles.modeText}>Pilih Mode Permainan</Text>
         {MODE.map((item, index) => (
           <Button
             key={index}
@@ -49,7 +50,6 @@ export default function Index() {
           />
         ))}
       </View>
-      <Image source={require("../../assets/logo.png")} style={styles.logo} />
     </View>
   );
 }
@@ -72,11 +72,12 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 30,
     paddingHorizontal: 45,
-    marginTop: 195,
   },
-  logo: {
-    width: 100,
-    height: 100,
-    marginTop: 160,
+  modeText: {
+    color: colors.home.secondary,
+    fontSize: 26,
+    textAlign: "center",
+    fontWeight: 700,
+    marginBottom: 36,
   },
 });

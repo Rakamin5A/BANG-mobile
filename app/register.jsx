@@ -3,36 +3,31 @@ import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import { z } from "zod";
+import axios from "axios";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { colors } from "../constants";
-import useAxios from "../hooks/useAxios";
 
 const REGISTER_SCHEMA = z.object({
   username: z.string().min(2, { message: "Username tidak boleh kosong" }),
   password: z.string().min(2, { message: "Password tidak boleh kosong" }),
-  name: z.string().min(2, { message: "Nama tidak boleh kosong" }),
+  nama: z.string().min(2, { message: "Nama tidak boleh kosong" }),
   email: z.string().email().min(2, { message: "Email tidak boleh kosong" }),
 });
 
 export default function Register() {
   const [registerForm, setRegisterForm] = useState({
-    name: "",
+    nama: "",
     username: "",
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState({
-    name: "",
+    nama: "",
     username: "",
     email: "",
     password: "",
-  });
-  const { response } = useAxios({
-    method: "POST",
-    url: "/users/add",
-    data: registerForm,
   });
 
   const handleOnChangeText = (key, value) => {
@@ -50,10 +45,17 @@ export default function Register() {
     try {
       REGISTER_SCHEMA.parse(registerForm);
 
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_BASE_URL}/auth/users`,
+        registerForm
+      );
+
       if (response.status === 201) {
         router.replace("/");
       }
     } catch (error) {
+      console.log("ERROR", error);
+
       const errors = {};
 
       error.errors.forEach((error) => {
@@ -81,9 +83,9 @@ export default function Register() {
         <View style={styles.inputContainer}>
           <View style={styles.inputWrapper}>
             <Input
-              name="name"
+              name="nama"
               placeholder="Nama"
-              state={registerForm.name}
+              state={registerForm.nama}
               handleOnChangeText={handleOnChangeText}
             />
             {errors?.name && (

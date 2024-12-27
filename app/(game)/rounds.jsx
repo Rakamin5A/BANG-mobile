@@ -37,7 +37,6 @@ export default function Rounds() {
           />
         ))}
       </View>
-      <Image source={require("../../assets/logo.png")} style={styles.logo} />
     </View>
   );
 }
@@ -61,16 +60,11 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     marginBottom: 36,
     textAlign: "center",
+    color: colors.home.secondary,
   },
   buttonContainer: {
     width: "100%",
     gap: 30,
     paddingHorizontal: 45,
-    marginTop: 195,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginTop: 160,
   },
 });

@@ -2,12 +2,12 @@ import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import { z } from "zod";
+import axios from "axios";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { colors } from "../constants";
 import { saveSecureStore } from "../utils";
-import useAxios from "../hooks/useAxios";
 
 const LOGIN_SCHEMA = z.object({
   username: z.string().min(1, { message: "Username tidak boleh kosong" }),
@@ -22,11 +22,6 @@ export default function Index() {
   const [errors, setErrors] = useState({
     username: "",
     password: "",
-  });
-  const { response } = useAxios({
-    method: "POST",
-    url: "/auth/login",
-    data: loginForm,
   });
 
   const handleOnChangeText = (key, value) => {
@@ -44,8 +39,13 @@ export default function Index() {
     try {
       LOGIN_SCHEMA.parse(loginForm);
 
-      if (response.status === 200) {
-        saveSecureStore("token", response.data.accessToken);
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_BASE_URL}/auth/login`,
+        loginForm
+      );
+
+      if (response?.status === 200) {
+        saveSecureStore("token", response.data.token);
         router.push("/(home)");
         setLoginForm({
           username: "",

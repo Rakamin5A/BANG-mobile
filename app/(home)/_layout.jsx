@@ -38,7 +38,6 @@ export default function TabLayout() {
               style={{ width: 123, height: 104, marginBottom: 30 }}
             />
           ),
-          href: "/",
         }}
       />
       <Tabs.Screen

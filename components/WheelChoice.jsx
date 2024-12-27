@@ -20,7 +20,7 @@ export default function WheelChoice({ setChoice, isOpposite }) {
         <TouchableHighlight
           style={{ ...styles.choice, top: 65, left: 20 }}
           underlayColor="#C8C8C8"
-          onPress={() => setChoice((prev) => ({ ...prev, player: 0 }))}
+          onPress={() => setChoice(0)}
         >
           <Image
             source={require("../assets/choice-rock.png")}
@@ -34,7 +34,7 @@ export default function WheelChoice({ setChoice, isOpposite }) {
             left: 125,
           }}
           underlayColor="#C8C8C8"
-          onPress={() => setChoice((prev) => ({ ...prev, player: 1 }))}
+          onPress={() => setChoice(1)}
         >
           <Image
             source={require("../assets/choice-paper.png")}
@@ -44,7 +44,7 @@ export default function WheelChoice({ setChoice, isOpposite }) {
         <TouchableHighlight
           style={{ ...styles.choice, top: 65, right: 20 }}
           underlayColor="#C8C8C8"
-          onPress={() => setChoice((prev) => ({ ...prev, player: 2 }))}
+          onPress={() => setChoice(2)}
         >
           <Image
             source={require("../assets/choice-scissors.png")}

@@ -8,7 +8,7 @@ const useAxios = (axiosParams) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async (params) => {
+  const sendRequest = async (params) => {
     try {
       const result = await axios.request(params);
 
@@ -21,10 +21,10 @@ const useAxios = (axiosParams) => {
   };
 
   useEffect(() => {
-    fetchData(axiosParams);
+    sendRequest(axiosParams);
   }, []);
 
-  return { response, error, loading };
+  return { response, error, loading, sendRequest };
 };
 
 export default useAxios;
