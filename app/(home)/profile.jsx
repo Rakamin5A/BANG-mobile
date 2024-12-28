@@ -69,13 +69,6 @@ export default function Profile() {
     });
   }, [response]);
 
-  console.log(
-    "STATS",
-    parseInt(response?.data?.stats.winnings) /
-      (parseInt(response?.data?.stats.winnings) +
-        parseInt(response?.data?.stats.winnings))
-  );
-
   return (
     <View style={styles.container}>
       <Image

@@ -13,6 +13,8 @@ const useAxios = (axiosParams) => {
       const result = await axios.request(params);
 
       setResponse(result);
+
+      return result;
     } catch (error) {
       setError(error);
     } finally {

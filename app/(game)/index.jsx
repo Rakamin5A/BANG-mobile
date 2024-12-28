@@ -46,6 +46,7 @@ export default function Index() {
             shadow={colors.home.secondary}
             color={colors.home.secondary}
             text={item.text}
+            disabled={item.mode === "on-pvp"}
             handlePress={() => handleMode(item.mode)}
           />
         ))}

@@ -54,8 +54,6 @@ export default function Register() {
         router.replace("/");
       }
     } catch (error) {
-      console.log("ERROR", error);
-
       const errors = {};
 
       error.errors.forEach((error) => {
